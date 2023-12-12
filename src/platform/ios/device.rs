@@ -26,6 +26,8 @@ use crate::platform::posix::{self, Fd};
 /// A TUN device for iOS.
 pub struct Device {
     queue: Queue,
+    address_: Option<Ipv4Addr>,
+    netmask_: Option<Ipv4Addr>,
 }
 
 impl Device {
@@ -40,6 +42,8 @@ impl Device {
 
             Device {
                 queue: Queue { tun },
+                address_: config.address,
+                netmask_: config.netmask,
             }
         };
         Ok(device)
@@ -102,10 +106,15 @@ impl D for Device {
     }
 
     fn address(&self) -> Result<Ipv4Addr> {
-        Err(Error::NotImplemented)
+        if let Some(value) = self.address_ {
+            Ok(value)
+        } else {
+            Err(Error::NotImplemented)
+        }
     }
 
     fn set_address(&mut self, value: Ipv4Addr) -> Result<()> {
+        self.address_ = Some(value);
         Ok(())
     }
 
@@ -126,10 +135,15 @@ impl D for Device {
     }
 
     fn netmask(&self) -> Result<Ipv4Addr> {
-        Err(Error::NotImplemented)
+        if let Some(value) = self.netmask_ {
+            Ok(value)
+        } else {
+            Err(Error::NotImplemented)
+        }
     }
 
     fn set_netmask(&mut self, value: Ipv4Addr) -> Result<()> {
+        self.netmask_ = Some(value);
         Ok(())
     }
 
